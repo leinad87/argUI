@@ -49,7 +49,7 @@ export default function Login() {
                 <Grid item >
                     <Card >
                         <GoogleLogin style={{ minHeight: '100vh' }}
-                            clientId="347655641532-kjtj3jm3tolas3tmbg3bjhh4lhpsoth8.apps.googleusercontent.com"
+                            clientId="878068974718-ufaiivfbb1ngm4o78bqi0d69nlmuq3el.apps.googleusercontent.com"
                             buttonText="Login with Google"
                             scope="https://www.googleapis.com/auth/spreadsheets.readonly"
                             onSuccess={(auth) => { authorize(auth) }}
