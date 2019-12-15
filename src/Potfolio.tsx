@@ -29,6 +29,7 @@ const useStyles = makeStyles({
   },
   list: {
     'list-style': 'none',
+    'padding': '0px'
   },
   listelement: {
     margin: '5px',

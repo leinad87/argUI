@@ -36,10 +36,6 @@ export default function Login() {
         history.push('/')
     }
 
-    function logout() {
-        google.logout();
-    }
-
     if (google.isLogedIn()) {
         return (<Redirect to='/'  />);
     } else {

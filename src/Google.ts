@@ -41,7 +41,7 @@ class Google {
         this.token = cookies.get('token');
         this.name = cookies.get('name');
         this.picture_url = cookies.get('picture');
-        this.sheet_id = '';
+        this.sheet_id = cookies.get('sheet');
     }
 
     static _instance: Google;
