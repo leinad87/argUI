@@ -33,6 +33,7 @@ export default function Login() {
     function authorize(auth: any) {
         google.save(auth);
 
+        console.log(auth);
         history.push('/')
     }
 
@@ -50,7 +51,7 @@ export default function Login() {
                             scope="https://www.googleapis.com/auth/spreadsheets.readonly"
                             onSuccess={(auth) => { authorize(auth) }}
                             onFailure={failure}
-                            accessType="offline"
+                            accessType="id_token token offline"
                             cookiePolicy={'single_host_origin'}
 
                         />

@@ -14,9 +14,6 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import RestoreIcon from '@material-ui/icons/Restore';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
 import LogoutIcon from '@material-ui/icons/ExitToApp'
 import { SwipeableDrawer, List, ListItem, Divider, ListItemText, ListItemIcon, BottomNavigation, BottomNavigationAction, Avatar, TextField, Button } from '@material-ui/core';
 import Portfolio from './Potfolio';
@@ -91,11 +88,6 @@ const useStyles = makeStyles((theme: Theme) =>
     fullList: {
       width: 'auto',
     },
-    stickToBottom: {
-      width: '100%',
-      position: 'fixed',
-      bottom: 0,
-    },
     large: {
       width: theme.spacing(7),
       height: theme.spacing(7),
@@ -114,14 +106,12 @@ export default function PrimarySearchAppBar() {
 
   useEffect(() => {
     // Actualiza el título del documento usando la API del navegador
-    document.body.style.background = `url(bg.jpg)`;
+    document.body.style.background = `gray`;
   });
 
   type DrawerSide = 'top' | 'left' | 'bottom' | 'right';
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
-  const [value, setValue] = React.useState(0);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -347,18 +337,6 @@ export default function PrimarySearchAppBar() {
       {renderContent()}
 
 
-      <BottomNavigation
-        value={value}
-        onChange={(event, newValue) => {
-          setValue(newValue);
-        }}
-        showLabels
-        className={classes.stickToBottom}
-      >
-        <BottomNavigationAction label="Recents" icon={<RestoreIcon />} />
-        <BottomNavigationAction label="Favorites" icon={<FavoriteIcon />} />
-        <BottomNavigationAction label="Nearby" icon={<LocationOnIcon />} />
-      </BottomNavigation>
     </div>
   );
 }

@@ -12,7 +12,7 @@ export type PositionType = {
     chg_today: string,
     cost: string,
     value: string,
-    profit: string,
+    profit: number,
     profitability: string,
     profitability_w_dividends: string,
     ytd: string,
@@ -34,6 +34,7 @@ class Google {
     token: string;
     name: string;
     picture_url: string;
+    expires_at: number;
 
     constructor() {
         const cookies = new Cookies();
@@ -41,7 +42,8 @@ class Google {
         this.token = cookies.get('token');
         this.name = cookies.get('name');
         this.picture_url = cookies.get('picture');
-        this.sheet_id = cookies.get('sheet');
+        this.sheet_id = cookies.get('sheet') || '';
+        this.expires_at = cookies.get('expires_at');
     }
 
     static _instance: Google;
@@ -57,15 +59,16 @@ class Google {
         new Cookies().set('token', auth.accessToken, { path: '/' });
         new Cookies().set('name', decoded.name, { path: '/' });
         new Cookies().set('picture', decoded.picture, { path: '/' });
+        new Cookies().set('expires_at', auth.Zi.expires_at, { path: '/' });
 
         Google._instance = new Google();
     }
 
     isLogedIn(): boolean {
-        return new Cookies().get('token');
+        return (this.token != '') && (this.expires_at > Date.now());
     }
 
-    logout(){
+    logout() {
         new Cookies().remove('token');
         new Cookies().remove('name');
         new Cookies().remove('picture');
@@ -73,21 +76,22 @@ class Google {
         Google._instance = new Google();
     }
 
-    isSheetValid():boolean{
+    isSheetValid(): boolean {
         return this.sheet_id != '';
     }
 
-    setSheetID(id:string){
+    setSheetID(id: string) {
         this.sheet_id = id;
-        new Cookies().set('sheet', id, {path: '/'});
+        new Cookies().set('sheet', id, { path: '/' });
     }
+
     async getPortfolio() {
 
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${this.sheet_id}/values/Cartera!A:W`;
         try {
             const { data } = await axios.get(url, this.headers());
             return this.parsePortfolioSheet(data.values);
-        } catch (e){
+        } catch (e) {
             console.log(e)
             return '';
         }
@@ -121,7 +125,7 @@ class Google {
                 chg_today: data[row][7],
                 cost: data[row][9],
                 value: data[row][10],
-                profit: data[row][11],
+                profit: Number(data[row][11].replace('.', '').replace(',', '.')),
                 profitability: data[row][13],
                 profitability_w_dividends: data[row][14],
                 ytd: data[row][16],
