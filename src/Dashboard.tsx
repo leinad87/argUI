@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
 
 import Portfolio from './Potfolio';
 import Google from './Google';
-import { useHistory, Redirect } from "react-router-dom";
-import { Card, Form, Button, Navbar, Container, NavItem } from 'react-bootstrap';
+import { Redirect } from "react-router-dom";
+import { Form, Button, Navbar, Container, NavItem } from 'react-bootstrap';
 
 export default class PrimarySearchAppBar extends React.Component {
 

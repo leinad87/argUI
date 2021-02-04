@@ -1,6 +1,5 @@
-import React, { useEffect, Component } from 'react';
-import Google, { PortofilioType, PositionType } from './Google';
-import { Link, Router, Route, Switch } from 'react-router-dom';
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
 import { Card, Container, Row, Col, } from 'react-bootstrap';
 import PortfolioItem from './PortfolioItem'
 
@@ -41,7 +40,7 @@ const cardColorGreen: CSS.Properties = {
 
 export default class Portfolio extends React.Component {
   state = {
-    data: { positions: [], change: 0, profit: 0, currentValue:0, totalInvestment:0 },
+    data: { positions: [], change: 0, profit: 0, currentValue: 0, totalInvestment: 0 },
     value: 0,
   }
 
@@ -55,7 +54,7 @@ export default class Portfolio extends React.Component {
 
 
   summary() {
-    if (this.state.data.positions.length == 0) return
+    if (this.state.data.positions.length === 0) return
     return (
       <Row>
         <Col><Card style={this.border_class(this.state.data.change)}>
@@ -64,7 +63,7 @@ export default class Portfolio extends React.Component {
               <h5>Total gain</h5>
               <div>
                 <div style={h1Styles}>{Math.floor(this.state.data.profit).toLocaleString()}</div>
-                <div style={h2Styles}>{((this.state.data.profit%1)*100).toFixed(0)}</div>
+                <div style={h2Styles}>{((this.state.data.profit % 1) * 100).toFixed(0)}</div>
                 <div style={h3Styles}>EUR</div>
               </div>
 
@@ -76,20 +75,20 @@ export default class Portfolio extends React.Component {
                 <Col>
                   <div style={subheader}>
                     <h6>Ganancia diaria</h6>
-                    <div>{this.state.data.change< 0 ? "" : "+"}{this.state.data.change}</div>
+                    <div>{this.state.data.change < 0 ? "" : "+"}{this.state.data.change}</div>
                   </div>
                 </Col>
 
                 <Col>
                   <div style={subheader}>
                     <h6>Valor</h6>
-                    <div>{this.state.data.currentValue< 0? "" : "+"}{this.state.data.currentValue}</div>
+                    <div>{this.state.data.currentValue < 0 ? "" : "+"}{this.state.data.currentValue}</div>
                   </div>
                 </Col>
                 <Col>
                   <div style={subheader}>
                     <h6>Coste</h6>
-                    <div>{this.state.data.totalInvestment<0 ? "" : "+"}{this.state.data.totalInvestment}</div>
+                    <div>{this.state.data.totalInvestment < 0 ? "" : "+"}{this.state.data.totalInvestment}</div>
                   </div>
                 </Col>
               </Row>
@@ -102,7 +101,7 @@ export default class Portfolio extends React.Component {
   }
 
   render() {
-    if (!this.state.data || this.state?.data?.positions?.length == 0) {
+    if (!this.state.data || this.state?.data?.positions?.length === 0) {
       Google.getInstance().getPortfolio().then((d) => this.setState({ data: d }));
       return ("Loading...")
     } else {
@@ -111,7 +110,6 @@ export default class Portfolio extends React.Component {
 
           <Switch>
             <Route path='/charts'>
-              <a>hola</a>
             </Route>
             <Route path='/'>
 

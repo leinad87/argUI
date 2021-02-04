@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import GoogleLogin from 'react-google-login';
 import Google from "./Google";
 import { Redirect } from 'react-router-dom';
-import { useHistory } from "react-router-dom";
 import { Card } from 'react-bootstrap';
 
 export default function Login() {
-    let history = useHistory();
     const google = Google.getInstance();
 
     useEffect(() => {

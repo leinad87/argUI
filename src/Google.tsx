@@ -1,8 +1,6 @@
 import axios from 'axios';
-import Portfolio from './Potfolio';
 import jwt from 'jsonwebtoken';
 import Cookies from 'universal-cookie';
-import { disconnect } from 'cluster';
 
 export type PositionType = {
     name: string,
@@ -68,10 +66,7 @@ class Google {
     }
 
     isLogedIn(): boolean {
-        {
-           // return false;
-        }
-        return (this.token != '') && (this.expires_at*1000 > Date.now());
+        return (this.token.length > 0) && (this.expires_at * 1000 > Date.now());
     }
 
     logout() {
@@ -83,7 +78,7 @@ class Google {
     }
 
     isSheetValid(): boolean {
-        return this.sheet_id?.length >0;
+        return this.sheet_id?.length > 0;
     }
 
     setSheetID(id: string) {
@@ -125,11 +120,11 @@ class Google {
             totalInvestment: data[4][2],
             currentValue: data[5][2],
             change: '0 €',
-            profit: parseFloat(data[7][2].replaceAll(".","").replace(",",".")),
+            profit: parseFloat(data[7][2].replaceAll(".", "").replace(",", ".")),
         };
 
         var row = 12;
-        while (data[row].length>0 && data[row][2] != '') {
+        while (data[row].length > 0 && data[row][2] !== '') {
             console.log()
             result.positions.push({
                 name: data[row][1],
@@ -137,7 +132,7 @@ class Google {
                 count: data[row][3],
                 avg_price: data[row][5],
                 current_price: parseFloat(data[row][6]),
-                chg_today: parseFloat(data[row][7].replace('.','').replace(',','.')),
+                chg_today: parseFloat(data[row][7].replace('.', '').replace(',', '.')),
                 cost: data[row][9],
                 value: data[row][10],
                 profit: Number(data[row][11].replace('.', '').replace(',', '.')),

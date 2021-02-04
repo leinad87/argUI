@@ -1,21 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import './PortfolioItem.css'
 import { Card, Container, Row, Col, } from 'react-bootstrap';
 import CSS from 'csstype';
 import { PositionType } from "./Google";
 
-const title: CSS.Properties = {
-  fontFamily: "roboto-regular",
-}
-const name: CSS.Properties = {
-  fontFamily: "roboto-regular",
-}
-
-const a: CSS.Properties = {
-  border: "1px solid red",
-  float: "left",
-  clear: "left",
-}
 const cardColorRed: CSS.Properties = {
   borderLeft: "5px solid red",
   marginTop: "6px",
