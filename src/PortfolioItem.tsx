@@ -17,11 +17,13 @@ const a: CSS.Properties = {
   clear: "left",
 }
 const cardColorRed: CSS.Properties = {
-  borderLeft: "5px solid red"
+  borderLeft: "5px solid red",
+  marginTop: "6px",
 }
 
 const cardColorGreen: CSS.Properties = {
-  borderLeft: "5px solid green"
+  borderLeft: "5px solid green",
+  marginTop: "6px",
 }
 
 function border_class(profit: number) {
@@ -40,7 +42,7 @@ function PortfolioItem(props: any) {
             <div >{position.name}</div>
           </Col>
           <Col>
-            <span >{position.value}</span>
+            <span >{position.value} €  </span>
             <span >{change>=0?"▲":"▼"}{change.toFixed(2)} ({position.chg_today.toFixed(2)}%)</span>
           </Col>
         </Row>
