@@ -45,10 +45,6 @@ export default class Portfolio extends React.Component {
     value: 0,
   }
 
-  constructor(props: any) {
-    super(props);
-  }
-
   border_class(profit: number) {
     return profit < 0 ? cardColorRed : cardColorGreen;
   }
