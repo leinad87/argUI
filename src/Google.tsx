@@ -2,14 +2,15 @@ import axios from 'axios';
 import Portfolio from './Potfolio';
 import jwt from 'jsonwebtoken';
 import Cookies from 'universal-cookie';
+import { disconnect } from 'cluster';
 
 export type PositionType = {
     name: string,
     ticker: string,
     count: string,
     avg_price: string,
-    current_price: string,
-    chg_today: string,
+    current_price: number,
+    chg_today: number,
     cost: string,
     value: string,
     profit: number,
@@ -27,6 +28,8 @@ export type PortofilioType = {
     positions: Array<PositionType>,
     totalInvestment: string,
     currentValue: string,
+    change: string,
+    profit: number,
 }
 
 class Google {
@@ -59,13 +62,16 @@ class Google {
         new Cookies().set('token', auth.accessToken, { path: '/' });
         new Cookies().set('name', decoded.name, { path: '/' });
         new Cookies().set('picture', decoded.picture, { path: '/' });
-        new Cookies().set('expires_at', auth.Zi.expires_at, { path: '/' });
+        new Cookies().set('expires_at', decoded.exp, { path: '/' });
 
         Google._instance = new Google();
     }
 
     isLogedIn(): boolean {
-        return (this.token != '') && (this.expires_at > Date.now());
+        {
+           // return false;
+        }
+        return (this.token != '') && (this.expires_at*1000 > Date.now());
     }
 
     logout() {
@@ -77,7 +83,7 @@ class Google {
     }
 
     isSheetValid(): boolean {
-        return this.sheet_id != '';
+        return this.sheet_id?.length >0;
     }
 
     setSheetID(id: string) {
@@ -92,9 +98,15 @@ class Google {
             const { data } = await axios.get(url, this.headers());
             return this.parsePortfolioSheet(data.values);
         } catch (e) {
-            console.log(e)
-            return '';
+            this.disconnect()
+            throw e;
         }
+    }
+    disconnect() {
+        new Cookies().remove('token');
+        new Cookies().remove('name');
+        new Cookies().remove('picture');
+        new Cookies().remove('expires_at');
     }
 
     // Aux methods
@@ -112,17 +124,20 @@ class Google {
             positions: [],
             totalInvestment: data[4][2],
             currentValue: data[5][2],
+            change: '0 €',
+            profit: parseFloat(data[7][2].replaceAll(".","").replace(",",".")),
         };
 
         var row = 12;
-        while (data[row][1] != 'Plusvalías') {
+        while (data[row].length>0 && data[row][2] != '') {
+            console.log()
             result.positions.push({
                 name: data[row][1],
                 ticker: data[row][2],
                 count: data[row][3],
                 avg_price: data[row][5],
-                current_price: data[row][6],
-                chg_today: data[row][7],
+                current_price: parseFloat(data[row][6]),
+                chg_today: parseFloat(data[row][7].replace('.','').replace(',','.')),
                 cost: data[row][9],
                 value: data[row][10],
                 profit: Number(data[row][11].replace('.', '').replace(',', '.')),
@@ -137,6 +152,9 @@ class Google {
             });
             row++;
         }
+
+        result.change = data[53][6];
+
         console.log(result)
         return result;
     }
