@@ -1,4 +1,4 @@
-
+import React from 'react';
 import Portfolio from './Potfolio';
 import Google from './Google';
 import { Redirect } from "react-router-dom";

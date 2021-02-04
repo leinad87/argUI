@@ -4,6 +4,7 @@ import { Card, Container, Row, Col, } from 'react-bootstrap';
 import PortfolioItem from './PortfolioItem'
 
 import CSS from 'csstype';
+import Google from './Google';
 
 const h1Styles: CSS.Properties = {
   backgroundColor: 'rgba(255, 255, 255, 0.85)',
