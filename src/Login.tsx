@@ -4,44 +4,45 @@ import Google from "./Google";
 import { Redirect } from 'react-router-dom';
 import { Card } from 'react-bootstrap';
 
-export default function Login() {
-    const google = Google.getInstance();
+export default class Login extends React.Component {
 
-    useEffect(() => {
-        // Actualiza el título del documento usando la API del navegador
-        document.body.style.background = `url(bg.jpg)`;
-    });
+    google = Google.getInstance();
+    state = {
+        logged: this.google.isLogedIn()
+    }
 
-    function failure(msg: any) {
+    failure(msg: any) {
         console.log("Error:")
         console.log(msg)
     }
 
-    function authorize(auth: any) {
-        google.save(auth);
+    authorize(auth: any) {
+        this.google.save(auth);
 
-        console.log(auth);
-        //history.push('/')
+        
+        this.setState({logged: true})
     }
 
-    if (google.isLogedIn()) {
-        return (<Redirect to='/'  />);
-    } else {
-        return (
-        <Card >
-            <GoogleLogin style={{ minHeight: '100vh' }}
-                clientId="878068974718-ufaiivfbb1ngm4o78bqi0d69nlmuq3el.apps.googleusercontent.com"
-                buttonText="Login with Google"
-                scope="https://www.googleapis.com/auth/spreadsheets.readonly"
-                onSuccess={(auth) => { authorize(auth) }}
-                onFailure={failure}
-                accessType="id_token token offline"
-                cookiePolicy={'single_host_origin'}
-                isSignedIn={true}
+    render() {
+        if (this.state.logged) {
+            return (<Redirect to='/' />);
+        } else {
+            return (
+                <Card >
+                    <GoogleLogin style={{ minHeight: '100vh' }}
+                        clientId="878068974718-ufaiivfbb1ngm4o78bqi0d69nlmuq3el.apps.googleusercontent.com"
+                        buttonText="Login with Google"
+                        scope="https://www.googleapis.com/auth/spreadsheets.readonly"
+                        onSuccess={(auth) => { this.authorize(auth) }}
+                        onFailure={this.failure}
+                        accessType="id_token token offline"
+                        cookiePolicy={'single_host_origin'}
+                        isSignedIn={true}
 
-            />
-        </Card>
+                    />
+                </Card>
 
-        );
+            );
+        }
     }
 }

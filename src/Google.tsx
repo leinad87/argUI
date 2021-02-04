@@ -40,7 +40,7 @@ class Google {
     constructor() {
         const cookies = new Cookies();
 
-        this.token = cookies.get('token');
+        this.token = cookies.get('token') || '';
         this.name = cookies.get('name');
         this.picture_url = cookies.get('picture');
         this.sheet_id = cookies.get('sheet') || '';
@@ -66,13 +66,14 @@ class Google {
     }
 
     isLogedIn(): boolean {
-        return (this.token.length > 0) && (this.expires_at * 1000 > Date.now());
+        return (this.token?.length > 0) && (this.expires_at * 1000 > Date.now());
     }
 
     logout() {
         new Cookies().remove('token');
         new Cookies().remove('name');
         new Cookies().remove('picture');
+        new Cookies().remove('expires_at');
 
         Google._instance = new Google();
     }
@@ -125,7 +126,6 @@ class Google {
 
         var row = 12;
         while (data[row].length > 0 && data[row][2] !== '') {
-            console.log()
             result.positions.push({
                 name: data[row][1],
                 ticker: data[row][2],
@@ -150,7 +150,6 @@ class Google {
 
         result.change = data[53][6];
 
-        console.log(result)
         return result;
     }
 }
