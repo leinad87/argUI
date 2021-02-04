@@ -1,20 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import GoogleLogin from 'react-google-login';
-import axios from 'axios';
-import DenseTable from "./DenseTable";
 import Google from "./Google";
-import Portfolio from "./Potfolio";
-import { PortofilioType } from "./Google"
-import { Card, makeStyles, createStyles, Theme, Grid } from "@material-ui/core";
 import { Redirect } from 'react-router-dom';
 import { useHistory } from "react-router-dom";
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-
-    }));
-
-
+import { Card } from 'react-bootstrap';
 
 export default function Login() {
     let history = useHistory();
@@ -34,31 +23,26 @@ export default function Login() {
         google.save(auth);
 
         console.log(auth);
-        history.push('/')
+        //history.push('/')
     }
 
     if (google.isLogedIn()) {
         return (<Redirect to='/'  />);
     } else {
         return (
-            <Grid container spacing={3} justify="center" alignItems="center"
-                style={{ minHeight: '100vh' }}>
-                <Grid item >
-                    <Card >
-                        <GoogleLogin style={{ minHeight: '100vh' }}
-                            clientId="878068974718-ufaiivfbb1ngm4o78bqi0d69nlmuq3el.apps.googleusercontent.com"
-                            buttonText="Login with Google"
-                            scope="https://www.googleapis.com/auth/spreadsheets.readonly"
-                            onSuccess={(auth) => { authorize(auth) }}
-                            onFailure={failure}
-                            accessType="id_token token offline"
-                            cookiePolicy={'single_host_origin'}
+        <Card >
+            <GoogleLogin style={{ minHeight: '100vh' }}
+                clientId="878068974718-ufaiivfbb1ngm4o78bqi0d69nlmuq3el.apps.googleusercontent.com"
+                buttonText="Login with Google"
+                scope="https://www.googleapis.com/auth/spreadsheets.readonly"
+                onSuccess={(auth) => { authorize(auth) }}
+                onFailure={failure}
+                accessType="id_token token offline"
+                cookiePolicy={'single_host_origin'}
+                isSignedIn={true}
 
-                        />
-                    </Card>
-                </Grid>
-            </Grid>
-
+            />
+        </Card>
 
         );
     }

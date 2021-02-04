@@ -1,0 +1,67 @@
+  .container {
+    flex: 1;
+  }
+  .rect {
+    flex: 0.5;
+    background-color: "rgba(251, 251, 251,1)";
+    left: 0;
+    width: 375;
+    top: 1;
+    height: 406
+  }
+  .rect2 {
+    flex: 0.5;
+    background-color: "rgba(241, 241, 241,1)"
+  }
+  .appl {
+    top: 106px;
+    left: 17;
+    position: "absolute";
+    font-family: "roboto-regular";
+    color: "#121212";
+    width: 87;
+    height: 17;
+    font-size: 26;
+  }
+  .loremIpsum {
+    top: 106;
+    left: 300;
+    position: "absolute";
+    font-family: "roboto-regular";
+    color: "#121212";
+    line-height: 24;
+    letter-spacing: 0;
+    font-family: 24;
+    width: 54;
+    height: 24;
+    text-align: "right"
+  }
+  .loremIpsum2 {
+    top: 106;
+    left: 354;
+    position: "absolute";
+    font-family: "roboto-regular";
+    color: "#121212";
+    width: 16;
+    height: 17
+  }
+  .appleInc {
+    left: 17;
+    position: "absolute";
+    font-family: "roboto-regular";
+    color: "#121212";
+    width: 235;
+    height: 17;
+    bottom: 662
+  }
+  .loremIpsum4 {
+    position: "absolute";
+    font-family: "roboto-regular";
+    color: "#121212";
+    width: 94;
+    height: 20;
+    right: 0;
+    text-align: "right";
+    bottom: 662;
+    left: 281
+  }
