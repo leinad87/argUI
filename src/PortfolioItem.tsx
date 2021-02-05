@@ -1,6 +1,6 @@
 import React from "react";
 import './PortfolioItem.css'
-import { Card, Container, Row, Col, } from 'react-bootstrap';
+import { Card, Row, Col, } from 'react-bootstrap';
 import CSS from 'csstype';
 import { PositionType } from "./Google";
 
@@ -23,19 +23,23 @@ function PortfolioItem(props: any) {
   const position:PositionType = props.position;
   const change = position.current_price-position.current_price/(position.chg_today/100+1);
   return (
-    <Card style={border_class(change)}>
-      <Container>
+    <Card style={border_class(change)} className="px-1">
         <Row>
-          <Col><span >{position.ticker}</span>
-            <div >{position.name}</div>
+          <Col xs={8}>
+            <span style={{float:"left"}} className={"limitText w-100"}>{position.name}</span>
           </Col>
-          <Col>
-            <span >{position.value} €  </span>
-            <span >{change>=0?"▲":"▼"}{change.toFixed(2)} ({position.chg_today.toFixed(2)}%)</span>
+          <Col xs={4}>
+            <span style={{float:"right"}}>{position.value} €  </span>
           </Col>
         </Row>
-      </Container>
-
+        <Row>
+          <Col>
+            <span style={{float:"left"}}></span>
+          </Col>
+          <Col>
+            <span style={{float:"right", color: change>0? "green" : "red"}} >{change>=0?"▲":"▼"}{change.toFixed(2)} ({position.chg_today.toFixed(2)}%)</span>
+          </Col>
+        </Row>
     </Card>
   );
 }
