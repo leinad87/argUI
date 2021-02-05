@@ -148,7 +148,7 @@ class Google {
             row++;
         }
 
-        result.change = data[53][6];
+        result.change = data.filter((row:any[]) => row[1]=="TOTAL")?.[0][6];
 
         return result;
     }
