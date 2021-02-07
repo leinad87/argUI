@@ -1,37 +1,13 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import moment from 'moment';
 import Cookies from 'universal-cookie';
-
-export type PositionType = {
-    name: string,
-    ticker: string,
-    count: string,
-    avg_price: string,
-    current_price: number,
-    chg_today: number,
-    cost: string,
-    value: string,
-    profit: number,
-    profitability: string,
-    profitability_w_dividends: string,
-    ytd: string,
-    div_ytd: string,
-    div_total: string,
-    div_year: string,
-    yoc: string,
-    weight: string,
-}
-
-export type PortofilioType = {
-    positions: Array<PositionType>,
-    totalInvestment: string,
-    currentValue: string,
-    change: string,
-    profit: number,
-}
+import { HistoricRow, HistoricSheet } from './Models/HistoricSheet';
+import { PortfolioBook } from './Models/PortfolioBook';
+import PortfolioSheet from './Models/PortfolioSheet';
 
 class Google {
-    sheet_id: string;
+    _sheetId: string;
     token: string;
     name: string;
     picture_url: string;
@@ -43,7 +19,7 @@ class Google {
         this.token = cookies.get('token') || '';
         this.name = cookies.get('name');
         this.picture_url = cookies.get('picture');
-        this.sheet_id = cookies.get('sheet') || '';
+        this._sheetId = cookies.get('sheet') || '';
         this.expires_at = cookies.get('expires_at');
     }
 
@@ -55,7 +31,7 @@ class Google {
         return this._instance;
     }
 
-    save(auth: any) {
+    save(auth: any) { //GoogleLoginResponse | GoogleLoginResponseOffline
         const decoded: any = jwt.decode(auth.tokenId);
         new Cookies().set('token', auth.accessToken, { path: '/' });
         new Cookies().set('name', decoded.name, { path: '/' });
@@ -79,20 +55,29 @@ class Google {
     }
 
     isSheetValid(): boolean {
-        return this.sheet_id?.length > 0;
+        return this._sheetId?.length > 0;
     }
 
-    setSheetID(id: string) {
-        this.sheet_id = id;
+    set sheetId(id: string) {
+        this._sheetId = id;
         new Cookies().set('sheet', id, { path: '/' });
     }
 
-    async getPortfolio() {
+    async getPortfolio(reportProgress: (p: number) => void): Promise<PortfolioBook> {
 
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${this.sheet_id}/values/Cartera!A:W`;
         try {
-            const { data } = await axios.get(url, this.headers());
-            return this.parsePortfolioSheet(data.values);
+            let url = `https://sheets.googleapis.com/v4/spreadsheets/${this._sheetId}/values/Cartera!A:W`;
+            let response = await axios.get(url, this.headers());
+            const portfolio = this.parsePortfolioSheet(response.data.values);
+            reportProgress(50);
+
+            url = `https://sheets.googleapis.com/v4/spreadsheets/${this._sheetId}/values/Histórico!A:T`;
+            response = await axios.get(encodeURI(url), this.headers());
+            const historic = this.parseHistoricSheet(response.data.values);
+            reportProgress(100);
+
+            return new PortfolioBook(portfolio, historic);
+
         } catch (e) {
             this.disconnect()
             throw e;
@@ -114,15 +99,17 @@ class Google {
         }
     }
 
+    parseMoneyFormat = (text: string) => {
+        return parseFloat(text.replaceAll(".", "").replace(",", "."))
+    }
+
     parsePortfolioSheet(data: any[][]) {
-        console.log(data)
-        var result: PortofilioType = {
-            positions: [],
-            totalInvestment: data[4][2],
-            currentValue: data[5][2],
-            change: '0 €',
-            profit: parseFloat(data[7][2].replaceAll(".", "").replace(",", ".")),
-        };
+
+        var result = new PortfolioSheet(
+            this.parseMoneyFormat(data[4][2]),
+            this.parseMoneyFormat(data[5][2]),
+            this.parseMoneyFormat(data[7][2])
+        )
 
         var row = 12;
         while (data[row].length > 0 && data[row][2] !== '') {
@@ -148,7 +135,28 @@ class Google {
             row++;
         }
 
-        result.change = data.filter((row:any[]) => row[1]=="TOTAL")?.[0][6];
+        result.change = data.filter((row: any[]) => row[1] === "TOTAL")?.[0][6];
+
+        return result;
+    }
+
+    parseHistoricSheet(data: any[][]): HistoricSheet {
+
+        let result = new HistoricSheet();
+
+        var row_i = 0;
+        while (data[row_i]?.length > 0 && data[row_i][0] !== '') {
+            const row = data[row_i];
+            const date = moment(row[0], "DD/MM/YYYY").toDate()
+            const input = this.parseMoneyFormat(row[1]);
+            const value = this.parseMoneyFormat(row[2]);
+            const profit = this.parseMoneyFormat(row[4]);
+
+
+            result.pushRow(new HistoricRow(date, input, value, profit));
+
+            row_i++;
+        }
 
         return result;
     }

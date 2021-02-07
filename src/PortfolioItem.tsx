@@ -2,7 +2,7 @@ import React from "react";
 import './PortfolioItem.css'
 import { Card, Row, Col, } from 'react-bootstrap';
 import CSS from 'csstype';
-import { PositionType } from "./Google";
+import { PositionType } from "./Models/PortfolioSheet";
 
 const cardColorRed: CSS.Properties = {
   borderLeft: "5px solid red",
@@ -18,31 +18,33 @@ function border_class(profit: number) {
   return profit < 0 ? cardColorRed : cardColorGreen;
 }
 
-function PortfolioItem(props: any) {
+type PortfolioItemProps = {
+  position: PositionType
+}
 
-  const position:PositionType = props.position;
-  const change = position.current_price-position.current_price/(position.chg_today/100+1);
+const PortfolioItem = ({ position }: PortfolioItemProps) => {
+
+  const change = position.current_price - position.current_price / (position.chg_today / 100 + 1);
   return (
     <Card style={border_class(change)} className="px-1">
-        <Row>
-          <Col xs={8}>
-            <span style={{float:"left"}} className={"limitText w-100"}>{position.name}</span>
-          </Col>
-          <Col xs={4}>
-            <span style={{float:"right"}}>{position.value} €  </span>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <span style={{float:"left"}}></span>
-          </Col>
-          <Col>
-            <span style={{float:"right", color: change>0? "green" : "red"}} >{change>=0?"▲":"▼"}{change.toFixed(2)} ({position.chg_today.toFixed(2)}%)</span>
-          </Col>
-        </Row>
+      <Row>
+        <Col xs={8}>
+          <span style={{ float: "left" }} className={"limitText w-100"}>{position.name}</span>
+        </Col>
+        <Col xs={4}>
+          <span style={{ float: "right" }}>{position.value} €  </span>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <span style={{ float: "left" }}></span>
+        </Col>
+        <Col>
+          <span style={{ float: "right", color: change > 0 ? "green" : "red" }} >{change >= 0 ? "▲" : "▼"}{change.toFixed(2)} ({position.chg_today.toFixed(2)}%)</span>
+        </Col>
+      </Row>
     </Card>
   );
 }
-
 
 export default PortfolioItem;
