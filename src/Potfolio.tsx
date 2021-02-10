@@ -134,8 +134,6 @@ const Portfolio = ({ data, historic }: PortfolioProps) => {
       )
   }
 
-
-
   return (
     <Container className="px-1 pt-1">
       {summary()}

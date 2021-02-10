@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import Portfolio from './Potfolio';
 import Google from './Google';
 import { Redirect, Route, Switch } from "react-router-dom";
-import { Form, Button, Navbar, NavItem, Spinner, ProgressBar, Col, Row, Container } from 'react-bootstrap';
+import { Form, Button, Navbar, NavItem, Spinner, ProgressBar, Col, Row, Container, Alert } from 'react-bootstrap';
 import { slide as Menu } from 'react-burger-menu'
 import { PortfolioBook } from './Models/PortfolioBook';
+import PositionDetails from './PositionDetails';
+import { useHistory } from 'react-router-dom';
 
 export default function PrimarySearchAppBar() {
 
@@ -13,9 +15,17 @@ export default function PrimarySearchAppBar() {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [data, setData] = useState<PortfolioBook | null>(null);
   const [progress, setProgress] = useState(0);
+  const [error, setError] = useState('');
+
+  const history = useHistory();
+
+  useEffect(() => {
+    Google.getInstance().getPortfolio((p: number) => setProgress(p))
+      .then((d) => setData(d))
+      .catch((e) => setError(e));
+  }, []);
 
   const renderContent = () => {
-
     if (!Google.getInstance().isSheetValid()) {
       return (
         <Form>
@@ -34,8 +44,6 @@ export default function PrimarySearchAppBar() {
 
       )
     } else if (!data) {
-
-      Google.getInstance().getPortfolio((p: number) => setProgress(p)).then((d) => setData(d));
       return (
         <Container className="show-grid">
           <Row className="mt-5 Zmb-2">
@@ -49,20 +57,18 @@ export default function PrimarySearchAppBar() {
             <Col>
               <ProgressBar now={progress} /></Col>
           </Row>
+          <Row>
+            <Alert>{error}</Alert>
+          </Row>
         </Container>
       )
     } else {
       return (
         <Switch>
-          <Route path='/charts'>
-          </Route>
-          <Route path='/'>
-
-            <Portfolio data={data.portfolio} historic={data.historic} />
-
-          </Route>
+          <Route path='/charts' />
+          <Route path='/position/:symbol' children={<PositionDetails transactionSheet={data.transactions} />} />
+          <Route path='/' children={<Portfolio data={data.portfolio} historic={data.historic} />} />
         </Switch>
-
       );
     }
   }

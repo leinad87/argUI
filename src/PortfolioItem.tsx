@@ -3,6 +3,7 @@ import './PortfolioItem.css'
 import { Card, Row, Col, } from 'react-bootstrap';
 import CSS from 'csstype';
 import { PositionType } from "./Models/PortfolioSheet";
+import { useHistory } from "react-router-dom";
 
 const cardColorRed: CSS.Properties = {
   borderLeft: "5px solid red",
@@ -23,10 +24,12 @@ type PortfolioItemProps = {
 }
 
 const PortfolioItem = ({ position }: PortfolioItemProps) => {
+  let history = useHistory();
 
   const change = position.current_price - position.current_price / (position.chg_today / 100 + 1);
+
   return (
-    <Card style={border_class(change)} className="px-1">
+    <Card style={border_class(change)} className="px-1" onClick={() => history.replace(`/position/${position.ticker}`)}>
       <Row>
         <Col xs={8}>
           <span style={{ float: "left" }} className={"limitText w-100"}>{position.name}</span>

@@ -5,6 +5,7 @@ import Cookies from 'universal-cookie';
 import { HistoricRow, HistoricSheet } from './Models/HistoricSheet';
 import { PortfolioBook } from './Models/PortfolioBook';
 import PortfolioSheet from './Models/PortfolioSheet';
+import { TransactionRow, TransactionSheet } from './Models/TransactionSheet';
 
 class Google {
     _sheetId: string;
@@ -63,27 +64,37 @@ class Google {
         new Cookies().set('sheet', id, { path: '/' });
     }
 
-    async getPortfolio(reportProgress: (p: number) => void): Promise<PortfolioBook> {
+    async getPortfolio(reportProgress: (p: number) => void) {
 
         try {
             let url = `https://sheets.googleapis.com/v4/spreadsheets/${this._sheetId}/values/Cartera!A:W`;
             let response = await axios.get(url, this.headers());
             const portfolio = this.parsePortfolioSheet(response.data.values);
-            reportProgress(50);
-
+            reportProgress(33);
+            //await new Promise(r => setTimeout(r, 1000));
             url = `https://sheets.googleapis.com/v4/spreadsheets/${this._sheetId}/values/Histórico!A:T`;
             response = await axios.get(encodeURI(url), this.headers());
             const historic = this.parseHistoricSheet(response.data.values);
+            reportProgress(66);
+            //await new Promise(r => setTimeout(r, 1000));
+            url = `https://sheets.googleapis.com/v4/spreadsheets/${this._sheetId}/values/Operaciones!A:O`;
+            response = await axios.get(encodeURI(url), this.headers());
+            const transactionSheet = this.parseTransactionSheet(response.data.values);
             reportProgress(100);
 
-            return new PortfolioBook(portfolio, historic);
+            return new PortfolioBook(portfolio, historic, transactionSheet);
 
         } catch (e) {
-            this.disconnect()
-            throw e;
+            this.disconnect();
+            console.log(e);
+            return null;
         }
     }
     disconnect() {
+        this.token = '';
+        this.name = '';
+        this.picture_url = '';
+        this.expires_at = 0;
         new Cookies().remove('token');
         new Cookies().remove('name');
         new Cookies().remove('picture');
@@ -159,6 +170,35 @@ class Google {
         }
 
         return result;
+    }
+
+    parseTransactionSheet(data: any[][]): TransactionSheet {
+        let result = new TransactionSheet();
+
+        let cols = new Map<string, number>(data[0].map((obj: string, idx: number) => [obj, idx]));
+
+        data.slice(1).filter((i: any) => i?.length > 0 && i[0] !== '')
+            .map((row: any) => {
+
+                let trimmedRow = row.map((col: string) => col.trim());
+
+                return new TransactionRow(
+                    trimmedRow[cols.get('Tipo')!],
+                    trimmedRow[cols.get('Operación')!],
+                    moment(trimmedRow[cols.get('Fecha')!], "DD/MM/YYYY").toDate(),
+                    trimmedRow[cols.get('Ticker')!],
+                    trimmedRow[cols.get('País')!],
+                    parseInt(trimmedRow[cols.get('Acciones')!]),
+                    this.parseMoneyFormat(trimmedRow[cols.get('Precio')!]),
+                    this.parseMoneyFormat(trimmedRow[cols.get('Comisión')!]),
+                    this.parseMoneyFormat(trimmedRow[cols.get('Total divisa')!]),
+                    this.parseMoneyFormat(trimmedRow[cols.get('Tipo')!]),
+                    this.parseMoneyFormat(trimmedRow[cols.get('Total Local')!]),
+                    trimmedRow[cols.get('Estado')!])
+            }).forEach((i: TransactionRow) => result.pushRow(i))
+
+        return result;
+
     }
 }
 
