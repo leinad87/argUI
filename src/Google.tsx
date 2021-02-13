@@ -146,7 +146,7 @@ class Google {
             row++;
         }
 
-        result.change = data.filter((row: any[]) => row[1] === "TOTAL")?.[0][6];
+        result.change = this.parseMoneyFormat(data.filter((row: any[]) => row[1] === "TOTAL")?.[0][6]);
 
         return result;
     }
