@@ -29,7 +29,7 @@ const PortfolioItem = ({ position }: PortfolioItemProps) => {
   const change = position.current_price - position.current_price / (position.chg_today / 100 + 1);
 
   return (
-    <Card style={border_class(change)} className="px-1" onClick={() => history.replace(`/position/${position.ticker}`)}>
+    <Card style={border_class(change)} className="px-1" onClick={() => history.push(`/position/${position.ticker}`)}>
       <Row>
         <Col xs={8}>
           <span style={{ float: "left" }} className={"limitText w-100"}>{position.name}</span>
