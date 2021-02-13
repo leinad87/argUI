@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createContext, useReducer } from 'react';
 import './App.css';
 import Dashboard from './Dashboard';
 import Login from './Login';
@@ -7,20 +7,19 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-const App: React.FC = () => {
+import {AppContextProvider} from "./AppContext";
 
+
+const App: React.FC = () => {
   return (
     <Router>
       <div>
-        
         <Switch>
-
-          <Route path="/login">
-
-            <Login />
-          </Route>
+          <Route path="/login" children={<Login />} />
           <Route path="/">
-            <Dashboard />
+            <AppContextProvider>
+              <Dashboard />
+            </AppContextProvider>
           </Route>
         </Switch>
       </div>

@@ -3,16 +3,20 @@ import { TransactionRow, TransactionSheet } from "./Models/TransactionSheet";
 
 import dividendImg from "./images/dividendo.png"
 import moment from "moment";
+import {useContext, useEffect} from "react";
+import {AppContext} from "./AppContext";
 
 type PositionDetailsProps = {
     transactionSheet: TransactionSheet;
 }
 
+
+
 const item = (i: TransactionRow, extraClass: string) => {
     return (
         <a href="#" className={`${extraClass} list-group-item list-group-item-action flex-column align-items-start`}>
             <div className="d-flex">
-                <img className="align-self-center mr-3" src={dividendImg} alt="Generic placeholder image"></img>
+                <img className="align-self-center mr-3" src={dividendImg} alt="Generic placeholder image"/>
                 <p>{i.operation_type}</p>
                 <p>Shares: {i.count}</p>
                 <p>Date: {moment(i.date).calendar()}</p>
@@ -24,9 +28,15 @@ const item = (i: TransactionRow, extraClass: string) => {
 }
 
 const PositionDetails = ({ transactionSheet }: PositionDetailsProps) => {
+    const { state,dispatch } = useContext(AppContext);
 
     let { symbol } = useParams();
     let transactions = transactionSheet.row.filter(i => i.symbol === symbol)
+
+    useEffect(() => {
+        dispatch({ type: "ADD_ARTICLE", payload:{ theme: symbol } });
+    }, []);
+
 
     return (
         <div>

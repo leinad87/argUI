@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useState } from 'react';
 import Portfolio from './Potfolio';
 import Google from './Google';
@@ -8,6 +8,7 @@ import { slide as Menu } from 'react-burger-menu'
 import { PortfolioBook } from './Models/PortfolioBook';
 import PositionDetails from './PositionDetails';
 import { useHistory } from 'react-router-dom';
+import {AppContext} from "./AppContext";
 
 export default function PrimarySearchAppBar() {
 
@@ -18,11 +19,14 @@ export default function PrimarySearchAppBar() {
   const [error, setError] = useState('');
 
   const history = useHistory();
+  const { state, dispatch }  = useContext(AppContext);
 
   useEffect(() => {
     Google.getInstance().getPortfolio((p: number) => setProgress(p))
       .then((d) => setData(d))
       .catch((e) => setError(e));
+
+      dispatch({ type: "ADD_ARTICLE", payload:{ theme: "argUI" } });
   }, []);
 
   const renderContent = () => {
@@ -80,9 +84,10 @@ export default function PrimarySearchAppBar() {
 
   return (
     <div>
+
       <Navbar bg="dark" sticky="top" variant="dark">
-        <span className="hamburger" onClick={() => setMenuOpen(!isMenuOpen)}></span>
-        <NavItem className="navbar-brand">argUI</NavItem>
+        <span className="hamburger" onClick={() => setMenuOpen(!isMenuOpen)}/>
+        <NavItem className="navbar-brand">{state.theme}</NavItem>
       </Navbar>
       <div className="wrapper">
         <Menu customBurgerIcon={false} customCrossIcon={false} isOpen={isMenuOpen} onOpen={() => setMenuOpen(true)} onClose={() => setMenuOpen(false)}>
@@ -95,6 +100,7 @@ export default function PrimarySearchAppBar() {
         </div>
       </div>
     </div>
+
   )
 
 }
