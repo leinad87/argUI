@@ -3,11 +3,24 @@ import { useState } from 'react';
 import Portfolio from './Potfolio';
 import Google from './Google';
 import { Redirect, Route, Switch } from "react-router-dom";
-import { Form, Button, Navbar, NavItem, Spinner, ProgressBar, Col, Row, Container, Alert } from 'react-bootstrap';
+import {
+    Form,
+    Button,
+    Navbar,
+    NavItem,
+    Spinner,
+    ProgressBar,
+    Col,
+    Row,
+    Container,
+    Alert, Nav,
+} from 'react-bootstrap';
 import { slide as Menu } from 'react-burger-menu'
 import { PortfolioBook } from './Models/PortfolioBook';
 import PositionDetails from './PositionDetails';
 import { useHistory } from 'react-router-dom';
+import Charts from "./Charts/Charts";
+
 
 export default function PrimarySearchAppBar() {
 
@@ -65,9 +78,9 @@ export default function PrimarySearchAppBar() {
     } else {
       return (
         <Switch>
-          <Route path='/charts' />
+          <Route path='/charts' children={ <Charts data={data} />} />
           <Route path='/position/:symbol' children={<PositionDetails transactionSheet={data.transactions} />} />
-          <Route path='/' children={<Portfolio data={data.portfolio} historic={data.historic} />} />
+          <Route path='/' children={<Portfolio data={data.portfolio}  />} />
         </Switch>
       );
     }
@@ -79,22 +92,23 @@ export default function PrimarySearchAppBar() {
   }
 
   return (
-    <div>
+    <>
       <Navbar bg="dark" sticky="top" variant="dark">
-        <span className="hamburger" onClick={() => setMenuOpen(!isMenuOpen)}></span>
+        <span className="hamburger" onClick={() => setMenuOpen(!isMenuOpen)} />
         <NavItem className="navbar-brand">argUI</NavItem>
+          <Navbar.Collapse className="justify-content-end">
+              <Nav.Link onClick={()=>history.push("/charts")}>Charts</Nav.Link>
+          </Navbar.Collapse>
       </Navbar>
       <div className="wrapper">
         <Menu customBurgerIcon={false} customCrossIcon={false} isOpen={isMenuOpen} onOpen={() => setMenuOpen(true)} onClose={() => setMenuOpen(false)}>
           <a id="home" className="menu-item" href="/">Home</a>
-          <a id="about" className="menu-item" href="/about">About</a>
-          <a id="contact" className="menu-item" href="/contact">Contact</a>
         </Menu>
         <div className="mb-5">
           {renderContent()}
         </div>
       </div>
-    </div>
+    </>
   )
 
 }

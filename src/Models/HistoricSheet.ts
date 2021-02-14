@@ -7,7 +7,11 @@ export class HistoricSheet {
     }
 
     pushRow(data: HistoricRow) {
-        this.row.push(data)
+        if(this.row.length > 0 && this.row[this.row.length-1].date.getTime() === data.date.getTime()){
+            this.row[this.row.length-1] = data;
+        }else {
+            this.row.push(data)
+        }
     }
 }
 

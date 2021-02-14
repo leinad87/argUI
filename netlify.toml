@@ -1,0 +1,9 @@
+[build]
+CI=false
+
+# The following redirect is intended for use with SPA that handle
+# routing internally.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

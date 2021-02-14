@@ -10,16 +10,16 @@ type PositionDetailsProps = {
 
 const item = (i: TransactionRow, extraClass: string) => {
     return (
-        <a href="#" className={`${extraClass} list-group-item list-group-item-action flex-column align-items-start`}>
+        <span className={`${extraClass} list-group-item list-group-item-action flex-column align-items-start`}>
             <div className="d-flex">
-                <img className="align-self-center mr-3" src={dividendImg} alt="Generic placeholder image"></img>
+                <img className="align-self-center mr-3" src={dividendImg} alt="Generic placeholder"/>
                 <p>{i.operation_type}</p>
                 <p>Shares: {i.count}</p>
                 <p>Date: {moment(i.date).calendar()}</p>
                 <p>Tax: {i.tax}</p>
                 <p>Total: {i.total}</p>
             </div>
-        </a>
+        </span>
     )
 }
 

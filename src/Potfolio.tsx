@@ -5,9 +5,7 @@ import PortfolioItem from './PortfolioItem'
 
 import CSS from 'csstype';
 
-import ReactEcharts from 'echarts-for-react';
 import PortfolioSheet from './Models/PortfolioSheet';
-import { HistoricSheet } from './Models/HistoricSheet';
 import { PositionType } from "./Models/PortfolioSheet";
 
 const h1Styles: CSS.Properties = {
@@ -44,39 +42,16 @@ const cardColorGreen: CSS.Properties = {
 }
 
 type PortfolioProps = {
-  data: PortfolioSheet,
-  historic: HistoricSheet
+  data: PortfolioSheet
 }
 
-const DAYS_TO_PLOT = 30;
-
-const Portfolio = ({ data, historic }: PortfolioProps) => {
+const Portfolio = ({ data }: PortfolioProps) => {
 
 
   function border_class(profit: number) {
     return profit < 0 ? cardColorRed : cardColorGreen;
   }
 
-  function getOption() {
-    console.log(historic.row.map(i => i.date).slice(-DAYS_TO_PLOT))
-    return {
-      xAxis: {
-        show: false,
-        data: historic.row.map(i => i.date).slice(-DAYS_TO_PLOT)
-      },
-      yAxis: {
-        type: 'value',
-        min: Math.round(Math.min.apply(Math, historic.row.map(i => i.value).slice(-DAYS_TO_PLOT)) / 1000) * 1000
-      },
-      series: [{
-        data: historic.row.map(i => i.value).slice(-DAYS_TO_PLOT),
-        type: 'line',
-        smooth: true,
-      }],
-      animationEasing: 'elasticOut',
-
-    };
-  }
 
   function summary() {
     if (data === undefined) return;
@@ -97,9 +72,6 @@ const Portfolio = ({ data, historic }: PortfolioProps) => {
                     </div>
                   </Col>
                   <Col sm={9} xs={7}>
-                    {
-                      <ReactEcharts style={{ height: '100px' }} theme="dark" option={getOption()} />
-                    }
 
                   </Col>
                 </Row>

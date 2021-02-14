@@ -6,6 +6,7 @@ import { HistoricRow, HistoricSheet } from './Models/HistoricSheet';
 import { PortfolioBook } from './Models/PortfolioBook';
 import PortfolioSheet from './Models/PortfolioSheet';
 import { TransactionRow, TransactionSheet } from './Models/TransactionSheet';
+import _ from "lodash";
 
 class Google {
     _sheetId: string;
@@ -64,22 +65,29 @@ class Google {
         new Cookies().set('sheet', id, { path: '/' });
     }
 
+    query = async (range: string) => {
+        let url = `https://sheets.googleapis.com/v4/spreadsheets/${this._sheetId}/values/${range}`;
+        let response = await axios.get(url, this.headers());
+        return response.data.values;
+    }
+
     async getPortfolio(reportProgress: (p: number) => void) {
 
         try {
-            let url = `https://sheets.googleapis.com/v4/spreadsheets/${this._sheetId}/values/Cartera!A:W`;
-            let response = await axios.get(url, this.headers());
-            const portfolio = this.parsePortfolioSheet(response.data.values);
-            reportProgress(33);
-            //await new Promise(r => setTimeout(r, 1000));
-            url = `https://sheets.googleapis.com/v4/spreadsheets/${this._sheetId}/values/Histórico!A:T`;
-            response = await axios.get(encodeURI(url), this.headers());
-            const historic = this.parseHistoricSheet(response.data.values);
-            reportProgress(66);
-            //await new Promise(r => setTimeout(r, 1000));
-            url = `https://sheets.googleapis.com/v4/spreadsheets/${this._sheetId}/values/Operaciones!A:O`;
-            response = await axios.get(encodeURI(url), this.headers());
-            const transactionSheet = this.parseTransactionSheet(response.data.values);
+
+            const portfolioResponse = await this.query("Cartera!A:W")
+            reportProgress(20);
+
+            let dataSheet = this.parseDataSheet(await this.query("Datos!A:H"));
+            reportProgress(40);
+
+            const portfolio = this.parsePortfolioSheet(portfolioResponse, dataSheet);
+            reportProgress(60);
+
+            const historic = this.parseHistoricSheet(await this.query("Histórico!A:T"));
+            reportProgress(80);
+
+            const transactionSheet = this.parseTransactionSheet(await this.query("Operaciones!A:O"));
             reportProgress(100);
 
             return new PortfolioBook(portfolio, historic, transactionSheet);
@@ -114,7 +122,7 @@ class Google {
         return parseFloat(text.replaceAll(".", "").replace(",", "."))
     }
 
-    parsePortfolioSheet(data: any[][]) {
+    parsePortfolioSheet(data: any[][], dataSheet: any[]) {
 
         var result = new PortfolioSheet(
             this.parseMoneyFormat(data[4][2]),
@@ -124,24 +132,30 @@ class Google {
 
         var row = 12;
         while (data[row].length > 0 && data[row][2] !== '') {
+            const symbol = data[row][2].trim();
+            const metadata = _.find(dataSheet, {'symbol': symbol});
+
             result.positions.push({
                 name: data[row][1],
-                ticker: data[row][2],
+                ticker: symbol,
                 count: data[row][3],
-                avg_price: data[row][5],
+                avg_price: this.parseMoneyFormat(data[row][5]),
                 current_price: parseFloat(data[row][6]),
                 chg_today: parseFloat(data[row][7].replace('.', '').replace(',', '.')),
-                cost: data[row][9],
-                value: data[row][10],
+                cost: this.parseMoneyFormat(data[row][9]),
+                value: this.parseMoneyFormat(data[row][10]),
                 profit: Number(data[row][11].replace('.', '').replace(',', '.')),
                 profitability: data[row][13],
                 profitability_w_dividends: data[row][14],
                 ytd: data[row][16],
-                div_ytd: data[row][17],
-                div_total: data[row][18],
-                div_year: data[row][19],
+                div_ytd: this.parseMoneyFormat(data[row][17]),
+                div_total: this.parseMoneyFormat(data[row][18]),
+                div_year: this.parseMoneyFormat(data[row][19]),
                 yoc: data[row][21],
                 weight: data[row][22],
+                sector: metadata?.sector.trim(),
+                supersector: metadata?.supersector.trim(),
+                industry: metadata?.industry.trim()
             });
             row++;
         }
@@ -162,7 +176,6 @@ class Google {
             const input = this.parseMoneyFormat(row[1]);
             const value = this.parseMoneyFormat(row[2]);
             const profit = this.parseMoneyFormat(row[4]);
-
 
             result.pushRow(new HistoricRow(date, input, value, profit));
 
@@ -199,6 +212,19 @@ class Google {
 
         return result;
 
+    }
+
+    parseDataSheet(data: string[][]) {
+        return data.slice(3) // remove headers
+            .filter(row=>row?.[0]) // ignore empty rows
+            .map(row=> {
+                return {
+                    symbol: row[0],
+                    supersector: row[1],
+                    sector: row[2],
+                    industry: row[3]
+                }
+            })
     }
 }
 
