@@ -1,0 +1,15 @@
+{
+  "background_color": "#343a40",
+  "description": "Portfolio dashboard",
+  "display": "fullscreen",
+  "icons": [
+    {
+      "src": "icon/broker.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "name": "argUI",
+  "short_name": "argUI",
+  "start_url": "/index.html"
+}

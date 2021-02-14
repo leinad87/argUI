@@ -24,19 +24,43 @@ import Charts from "./Charts/Charts";
 
 export default function PrimarySearchAppBar() {
 
-  const [sheetID, setSheetID] = useState('');
-  const [isMenuOpen, setMenuOpen] = useState(false);
-  const [data, setData] = useState<PortfolioBook | null>(null);
-  const [progress, setProgress] = useState(0);
-  const [error, setError] = useState('');
+    const [sheetID, setSheetID] = useState('');
+    const [isMenuOpen, setMenuOpen] = useState(false);
+    const [data, setData] = useState<PortfolioBook | null>(null);
+    const [progress, setProgress] = useState(0);
+    const [error, setError] = useState('');
 
-  const history = useHistory();
+    const history = useHistory();
 
-  useEffect(() => {
-    Google.getInstance().getPortfolio((p: number) => setProgress(p))
-      .then((d) => setData(d))
-      .catch((e) => setError(e));
-  }, []);
+    useEffect(() => {
+        Google.getInstance().getPortfolio((p: number) => setProgress(p))
+            .then((d) => setData(d))
+            .catch((e) => setError(e));
+    }, []);
+
+    let deferredPrompt: BeforeInstallPromptEvent | null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        deferredPrompt = e as BeforeInstallPromptEvent;
+        // Update UI to notify the user they can add to home screen
+    });
+
+    const installA2HS = async () => {
+        if (deferredPrompt != null) {
+            // Show the prompt
+            await deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            let choiceResult = await deferredPrompt.userChoice;
+            if (choiceResult?.outcome === 'accepted') {
+                console.log('User accepted the A2HS prompt');
+            } else {
+                console.log('User dismissed the A2HS prompt');
+            }
+            deferredPrompt = null;
+        }
+    }
 
   const renderContent = () => {
     if (!Google.getInstance().isSheetValid()) {
@@ -103,6 +127,7 @@ export default function PrimarySearchAppBar() {
       <div className="wrapper">
         <Menu customBurgerIcon={false} customCrossIcon={false} isOpen={isMenuOpen} onOpen={() => setMenuOpen(true)} onClose={() => setMenuOpen(false)}>
           <a id="home" className="menu-item" href="/">Home</a>
+            <Button onClick={()=>installA2HS()}></Button>
         </Menu>
         <div className="mb-5">
           {renderContent()}
