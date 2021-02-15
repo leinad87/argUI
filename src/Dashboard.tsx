@@ -4,7 +4,6 @@ import Portfolio from './Potfolio';
 import Google from './Google';
 import { Redirect, Route, Switch } from "react-router-dom";
 import {
-    Form,
     Button,
     Navbar,
     NavItem,
@@ -20,11 +19,11 @@ import { PortfolioBook } from './Models/PortfolioBook';
 import PositionDetails from './PositionDetails';
 import { useHistory } from 'react-router-dom';
 import Charts from "./Charts/Charts";
+import SheetInputForm from "./SheetInputForm";
 
 
 export default function PrimarySearchAppBar() {
 
-    const [sheetID, setSheetID] = useState('');
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [data, setData] = useState<PortfolioBook | null>(null);
     const [progress, setProgress] = useState(0);
@@ -64,22 +63,7 @@ export default function PrimarySearchAppBar() {
 
   const renderContent = () => {
     if (!Google.getInstance().isSheetValid()) {
-      return (
-        <Form>
-          <Form.Group controlId="sheet-id">
-            <Form.Label>Sheet ID. Puedes sacarla de la URL</Form.Label>
-            <Form.Control placeholder="Sheet ID" value={sheetID} onChange={e => setSheetID(e.target.value)} />
-            <Form.Text className="text-muted">
-              No nos importa tu cartera, no la veremos nunca.
-            </Form.Text>
-          </Form.Group>
-          <Button variant="primary" type="submit" onClick={() => Google.getInstance().sheetId = sheetID}>
-            Submit
-          </Button>
-
-        </Form>
-
-      )
+      return <SheetInputForm />
     } else if (!data) {
       return (
         <Container className="show-grid">
@@ -127,7 +111,11 @@ export default function PrimarySearchAppBar() {
       <div className="wrapper">
         <Menu customBurgerIcon={false} customCrossIcon={false} isOpen={isMenuOpen} onOpen={() => setMenuOpen(true)} onClose={() => setMenuOpen(false)}>
           <a id="home" className="menu-item" href="/">Home</a>
-            <Button onClick={()=>installA2HS()}></Button>
+            <Button onClick={()=>installA2HS()}>Install</Button>
+            <a id="logout" className="menu-item" href="#" onClick={()=>{
+                Google.getInstance().logout();
+                history.push("/")
+            }}>Logout</a>
         </Menu>
         <div className="mb-5">
           {renderContent()}

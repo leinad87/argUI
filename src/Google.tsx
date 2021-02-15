@@ -27,10 +27,10 @@ class Google {
 
     static _instance: Google;
     static getInstance(): Google {
-        if (this._instance == null) {
-            this._instance = new Google();
+        if (Google._instance == null) {
+            Google._instance = new Google();
         }
-        return this._instance;
+        return Google._instance;
     }
 
     save(auth: any) { //GoogleLoginResponse | GoogleLoginResponseOffline
@@ -52,6 +52,7 @@ class Google {
         new Cookies().remove('name');
         new Cookies().remove('picture');
         new Cookies().remove('expires_at');
+        new Cookies().remove('sheet');
 
         Google._instance = new Google();
     }
@@ -72,6 +73,9 @@ class Google {
     }
 
     async getPortfolio(reportProgress: (p: number) => void) {
+
+        if(!this.isSheetValid())
+            return null;
 
         try {
 

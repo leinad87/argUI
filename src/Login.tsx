@@ -1,16 +1,14 @@
 import React from 'react';
-import { useState } from 'react';
 import GoogleLogin, { GoogleLoginResponse, GoogleLoginResponseOffline } from 'react-google-login';
 import Google from "./Google";
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import { Card } from 'react-bootstrap';
 
 
 export default function Login() {
 
     const google = Google.getInstance();
-    const [logged, setLogged] = useState(google.isLogedIn())
-
+    const history = useHistory();
 
     const failure = (msg: string) => {
         console.log("Error:");
@@ -19,11 +17,11 @@ export default function Login() {
 
     const authorize = (auth: GoogleLoginResponse | GoogleLoginResponseOffline): void => {
         google.save(auth);
-        setLogged(true);
+        history.replace("/")
     }
 
 
-    if (logged) {
+    if (google.isLogedIn()) {
         return (<Redirect to='/' />);
     }
 
@@ -37,7 +35,7 @@ export default function Login() {
                 onFailure={failure}
                 accessType="id_token token offline"
                 cookiePolicy={'single_host_origin'}
-                isSignedIn={true}
+                isSignedIn={google.name?.length>0}
 
             />
         </Card>
