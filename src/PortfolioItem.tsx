@@ -1,18 +1,16 @@
 import React from "react";
 import './PortfolioItem.css'
-import { Card, Row, Col, } from 'react-bootstrap';
+import { Row, Col, } from 'react-bootstrap';
 import CSS from 'csstype';
 import { PositionType } from "./Models/PortfolioSheet";
 import { useHistory } from "react-router-dom";
 
 const cardColorRed: CSS.Properties = {
-  borderLeft: "5px solid red",
-  marginTop: "6px",
+  borderLeft: "2px solid red",
 }
 
 const cardColorGreen: CSS.Properties = {
-  borderLeft: "5px solid green",
-  marginTop: "6px",
+  borderLeft: "2px solid green",
 }
 
 function border_class(profit: number) {
@@ -20,17 +18,24 @@ function border_class(profit: number) {
 }
 
 type PortfolioItemProps = {
-  position: PositionType
+  position: PositionType,
+  isFirst?: boolean
+  isLast?: boolean
 }
 
-const PortfolioItem = ({ position }: PortfolioItemProps) => {
+const PortfolioItem = ({ position, isFirst=false, isLast=false }: PortfolioItemProps) => {
   let history = useHistory();
 
   const change = position.current_price - position.current_price / (position.chg_today / 100 + 1);
 
+  const rounded = isLast? "rounded-bottom": isFirst?"rounded-top":"";
+  const profit = position.cost-position.value;
+  const performance = 100*profit/position.cost;
   return (
-    <Card style={border_class(change)} className="px-1" onClick={() => history.push(`/position/${position.ticker}`)}>
-      <Row>
+  <li  style={border_class(change)} className={`${rounded} p-1 list-group-item list-group-item-action flex-column align-items-start`}
+         onClick={() => history.push(`/position/${position.ticker}`)}
+  >
+      <Row >
         <Col xs={8}>
           <span style={{ float: "left" }} className={"limitText w-100"}>{position.name}</span>
         </Col>
@@ -40,13 +45,13 @@ const PortfolioItem = ({ position }: PortfolioItemProps) => {
       </Row>
       <Row>
         <Col>
-          <span style={{ float: "left" }}></span>
+          <span style={{ float: "left", color: change > 0 ? "green" : "red" }} >{change > 0 ? "▲" : change < 0 ? "▼" : ""}{change.toFixed(3)} ({position.chg_today.toFixed(2)}%)</span>
         </Col>
         <Col>
-          <span style={{ float: "right", color: change > 0 ? "green" : "red" }} >{change >= 0 ? "▲" : "▼"}{change.toFixed(2)} ({position.chg_today.toFixed(2)}%)</span>
+          <span style={{ float: "right" }}>{profit.toFixed(2)}€ ({performance.toFixed(2)}%)</span>
         </Col>
       </Row>
-    </Card>
+  </li>
   );
 }
 

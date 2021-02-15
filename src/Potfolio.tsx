@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Card, Container, Row, Col } from 'react-bootstrap';
+import { Card, Row, Col } from 'react-bootstrap';
 import PortfolioItem from './PortfolioItem'
 
 import CSS from 'csstype';
@@ -58,7 +58,7 @@ const Portfolio = ({ data }: PortfolioProps) => {
 
     else
       return (
-        <Row>
+        <Row className="mb-2">
           <Col>
             <Card className="p-0" style={border_class(data!.change)}>
               <Card.Body className="p-0">
@@ -107,10 +107,14 @@ const Portfolio = ({ data }: PortfolioProps) => {
   }
 
   return (
-    <Container className="px-1 pt-1">
+    <>
       {summary()}
-      {data!.positions.map((p: PositionType) => <PortfolioItem position={p} />)}
-    </Container>
+      <ul className="m-0 p-0">
+      <PortfolioItem position={data!.positions[0]} isFirst={true} />
+      {data!.positions.slice(1,-1).map((p: PositionType) => <PortfolioItem position={p} />)}
+      <PortfolioItem position={data!.positions[data!.positions.length-1]} isLast={true} />
+      </ul>
+    </>
   )
 }
 

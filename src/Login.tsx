@@ -26,8 +26,9 @@ export default function Login() {
     }
 
     return (
+        <div style={{height: "100vh", justifyContent: "center", alignItems: "center", display: "flex"}}>
         <Card >
-            <GoogleLogin style={{ minHeight: '100vh' }}
+            <GoogleLogin
                 clientId="878068974718-ufaiivfbb1ngm4o78bqi0d69nlmuq3el.apps.googleusercontent.com"
                 buttonText="Login with Google"
                 scope="https://www.googleapis.com/auth/spreadsheets.readonly"
@@ -39,5 +40,6 @@ export default function Login() {
 
             />
         </Card>
+        </div>
     );
 }
